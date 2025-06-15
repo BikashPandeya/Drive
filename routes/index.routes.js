@@ -18,13 +18,9 @@ router.get("/", (req, res) => {
 router.get("/home", authMiddleware  , async(req, res) => {
   try {
     const userFiles = await fileModel.find({ user: req.user.userId })
-      // console.log(userFiles);
-      res.render("home", { uploadedFiles , files : userFiles });
-    
+    res.render("home", { uploadedFiles , files : userFiles, error: null });
   } catch (error) {
-    res.status(500).json({
-      message : "Server Error"
-    })
+    res.status(500).render("home", { uploadedFiles, files: [], error: "Server Error" });
   } 
 });
   
@@ -38,7 +34,7 @@ router.post("/upload-file",authMiddleware ,  upload.single("file"), async (req, 
         async (error, result) => {
           if (error) {
             console.error("Upload error:", error);
-            return res.status(500).send("Upload Failed");
+            return res.status(500).render("home", { uploadedFiles, files: [], error: "Upload Failed" });
           }
   
           const newFile = await fileModel.create({
@@ -57,36 +53,35 @@ router.post("/upload-file",authMiddleware ,  upload.single("file"), async (req, 
       Readable.from(fileBuffer).pipe(stream);
     } catch (err) {
       console.error(err);
-      res.status(500).send("Server Error");
+      res.status(500).render("home", { uploadedFiles, files: [], error: "Server Error" });
     }
 
   });
 
-  router.get("/download/:public_id", authMiddleware, async (req, res) => {
-    try {
-      const file = await fileModel.findOne({
-        public_id: req.params.public_id,
-        user: req.user.userId,
-      });
-  
-      if (!file) {
-        return res.status(404).send("File not found");
-      }
-  
-      // Set download headers
-      res.setHeader("Content-Disposition", `attachment; filename="${file.original_filename}"`);
-      res.setHeader("Content-Type", "application/octet-stream");
-  
-      // Force download from Cloudinary by redirecting with 'fl_attachment'
-      const downloadUrl = file.secure_url.replace("/upload/", "/upload/fl_attachment/");
-      // Note: Cloudinary's 'fl_attachment' transformation forces the file to download
-  
-      res.redirect(downloadUrl);
-    } catch (err) {
-      console.error("Download error:", err);
-      res.status(500).send("Download failed");
+router.get("/download/:public_id", authMiddleware, async (req, res) => {
+  try {
+    const file = await fileModel.findOne({
+      public_id: req.params.public_id,
+      user: req.user.userId,
+    });
+
+    if (!file) {
+      return res.status(404).render("home", { uploadedFiles, files: [], error: "File not found" });
     }
-  });
-  
+
+    // Set download headers
+    res.setHeader("Content-Disposition", `attachment; filename="${file.original_filename}"`);
+    res.setHeader("Content-Type", "application/octet-stream");
+
+    // Force download from Cloudinary by redirecting with 'fl_attachment'
+    const downloadUrl = file.secure_url.replace("/upload/", "/upload/fl_attachment/");
+    // Note: Cloudinary's 'fl_attachment' transformation forces the file to download
+
+    res.redirect(downloadUrl);
+  } catch (err) {
+    console.error("Download error:", err);
+    res.status(500).render("home", { uploadedFiles, files: [], error: "Download failed" });
+  }
+});
 
 module.exports = router
