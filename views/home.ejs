@@ -48,6 +48,19 @@
         background: #16204a;
         color: #e0e6f7;
       }
+      .truncate-filename {
+        max-width: 220px; /* Increased from 140px */
+        display: inline-block;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        vertical-align: middle;
+      }
+      @media (max-width: 640px) {
+        .truncate-filename {
+          max-width: 130px; /* Increased from 80px */
+        }
+      }
     </style>
   </head>
   <body class="min-h-screen">
@@ -152,7 +165,7 @@
               <!-- File info and download -->
               <div class="flex-1 flex flex-col justify-between h-full">
                 <div>
-                  <h1 class="text-main font-semibold text-lg mb-1"><%= file.originalName %></h1>
+                  <h1 class="text-main font-semibold text-lg mb-1 truncate-filename"><%= file.originalName %></h1>
                   <p class="text-secondary text-xs">Type: <%= file.resource_type %></p>
                 </div>
                 <div class="flex justify-end mt-4">
@@ -224,7 +237,7 @@
                   </div>
                   <p
                     id="file-name"
-                    class="text-secondary text-base truncate max-w-full"
+                    class="text-secondary text-base truncate-filename max-w-full"
                   ></p>
                 </div>
                 <input
@@ -238,13 +251,14 @@
               </label>
             </div>
 
+            <!-- Upload button -->
             <button
               type="submit"
               id="upload-button"
               class="mt-8 btn-primary py-3 px-10 rounded-xl text-lg font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-[#1a1f3c] transition-all duration-300 hidden flex items-center"
             >
               <i class="ri-upload-2-line mr-2"></i>
-              Upload&nbsp;<span id="upload-filename"></span>
+              Upload&nbsp;<span id="upload-filename" class="truncate-filename"></span>
             </button>
           </form>
         </div>
