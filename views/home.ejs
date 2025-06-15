@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CloudDrive - Your Secure Cloud Storage</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link
+      href="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        background: linear-gradient(135deg, #0a1437 0%, #16204a 100%);
+      }
+      .bg-card {
+        background: rgba(20, 34, 61, 0.95);
+        border: 1px solid #223366;
+      }
+      .bg-navbar {
+        background: rgba(10, 20, 55, 0.95);
+        border-bottom: 1px solid #223366;
+      }
+      .text-main {
+        color: #e0e6f7;
+      }
+      .text-secondary {
+        color: #8bb4f8;
+      }
+      .btn-primary {
+        background: #2563eb;
+        color: #e0e6f7;
+      }
+      .btn-primary:hover {
+        background: #1e40af;
+      }
+      .border-blue {
+        border-color: #2563eb;
+      }
+      .popup {
+        background: rgba(10, 20, 55, 0.95);
+      }
+      .input-bg {
+        background: #16204a;
+        color: #e0e6f7;
+      }
+    </style>
+  </head>
+  <body class="min-h-screen">
+    <!-- Navigation Bar -->
+    <nav class="bg-navbar backdrop-blur-lg fixed w-full z-50">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-16">
+          <div class="flex items-center">
+            <i class="ri-cloud-line text-2xl text-blue-400 mr-2"></i>
+            <span class="text-main text-xl font-bold">CloudDrive</span>
+          </div>
+          <div class="flex items-center space-x-4">
+            <button
+              onclick="showPopup()"
+              class="btn-primary font-medium rounded-lg px-4 py-2 transition-all duration-300 flex items-center"
+            >
+              <i class="ri-upload-cloud-2-line mr-2"></i>Upload File
+            </button>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <main class="pt-20 pb-10 px-4">
+      <!-- Hero Section -->
+      <div class="max-w-7xl mx-auto text-center mb-12">
+        <h1 class="text-4xl md:text-5xl font-bold text-main mb-4">
+          Your Files, Everywhere You Go
+        </h1>
+        <p class="text-secondary text-lg max-w-2xl mx-auto">
+          Store, share, and access your files securely from any device. Your
+          personal cloud storage solution.
+        </p>
+      </div>
+
+      <!-- Stats Section -->
+      <div
+        class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 mb-12"
+      >
+        <div class="bg-card rounded-xl p-6">
+          <i class="ri-shield-check-line text-3xl text-blue-400 mb-4"></i>
+          <h3 class="text-main text-xl font-semibold mb-2">Secure Storage</h3>
+          <p class="text-secondary">
+            Your files are encrypted and stored with enterprise-grade security
+          </p>
+        </div>
+        <div class="bg-card rounded-xl p-6">
+          <i class="ri-global-line text-3xl text-blue-400 mb-4"></i>
+          <h3 class="text-main text-xl font-semibold mb-2">Access Anywhere</h3>
+          <p class="text-secondary">
+            Access your files from any device, anywhere in the world
+          </p>
+        </div>
+        <div class="bg-card rounded-xl p-6">
+          <i class="ri-share-line text-3xl text-blue-400 mb-4"></i>
+          <h3 class="text-main text-xl font-semibold mb-2">Easy Sharing</h3>
+          <p class="text-secondary">
+            Share files securely with just a few clicks
+          </p>
+        </div>
+      </div>
+
+      <!-- Files Section -->
+      <div class="max-w-4xl mx-auto">
+        <div class="bg-card rounded-xl p-6">
+          <h2 class="text-2xl font-semibold text-main mb-6 flex items-center">
+            <i class="ri-folder-line mr-2 text-blue-400"></i>
+            My Files
+          </h2>
+          <div class="files flex flex-col gap-2 w-full">
+            <% files.forEach((file) => { %>
+            <div class="p-4 rounded-xl bg-navbar flex flex-row gap-4 items-center shadow-lg border border-blue-900 hover:bg-blue-950 transition-all duration-300">
+              <!-- Preview block -->
+              <div class="flex-shrink-0 w-32 h-32 flex items-center justify-center rounded-lg bg-[#16204a] border-2 border-blue-800 overflow-hidden shadow">
+                <% if (file.resource_type === "image") { %>
+                  <img
+                    src="<%= file.secure_url %>"
+                    alt="preview"
+                    class="w-full h-full object-cover rounded-lg"
+                  />
+                <% } else if (file.resource_type === "video") { %>
+                  <video
+                    src="<%= file.secure_url %>"
+                    class="w-full h-full object-cover rounded-lg"
+                    muted
+                    autoplay
+                    loop
+                  ></video>
+                <% } else if (file.format === "pdf") { %>
+                  <iframe
+                    src="<%= file.secure_url %>"
+                    class="w-full h-full rounded-lg"
+                  ></iframe>
+                <% } else { %>
+                  <div class="flex flex-col items-center justify-center text-blue-400">
+                    <i class="ri-file-text-line text-4xl mb-2"></i>
+                    <span class="text-xs text-secondary">No Preview</span>
+                  </div>
+                <% } %>
+              </div>
+              <!-- File info and download -->
+              <div class="flex-1 flex flex-col justify-between h-full">
+                <div>
+                  <h1 class="text-main font-semibold text-lg mb-1"><%= file.originalName %></h1>
+                  <p class="text-secondary text-xs">Type: <%= file.resource_type %></p>
+                </div>
+                <div class="flex justify-end mt-4">
+                  <a href="/download/<%= file.public_id %>" class="text-blue-400 hover:text-blue-200 transition-colors duration-200">
+                    <i class="ri-download-cloud-line text-2xl"></i>
+                  </a>
+                </div>
+              </div>
+            </div>
+            <% }) %>
+          </div>
+        </div>
+      </div>
+
+      <!-- Upload Popup -->
+      <div
+        class="popup hidden fixed top-0 left-0 w-full h-full flex items-center justify-center z-50"
+        style="background: rgba(10, 20, 55, 0.85)"
+      >
+        <div
+          class="bg-card rounded-3xl p-10 md:p-14 shadow-2xl max-w-3xl w-[95vw] md:w-[700px] mx-2 relative border-2 border-blue-400 transition-all duration-300"
+        >
+          <button
+            onclick="hidePopup()"
+            class="absolute top-6 right-6 text-blue-400 hover:text-blue-200 transition-colors duration-300 text-3xl"
+          >
+            <i class="ri-close-line"></i>
+          </button>
+
+          <h2
+            class="text-3xl font-bold text-main mb-8 text-center tracking-wide"
+          >
+            Upload File
+          </h2>
+
+          <form
+            action="/upload-file"
+            method="post"
+            enctype="multipart/form-data"
+            class="flex flex-col items-center"
+          >
+            <div class="w-full">
+              <label
+                for="dropzone-file"
+                class="flex flex-col items-center justify-center w-full h-72 border-2 border-blue-400 border-dashed rounded-2xl cursor-pointer input-bg hover:bg-blue-900 transition-colors duration-300"
+              >
+                <div
+                  id="upload-prompt"
+                  class="flex flex-col items-center justify-center pt-8 pb-8"
+                >
+                  <i
+                    class="ri-upload-cloud-2-line text-5xl mb-4 text-blue-400"
+                  ></i>
+                  <p class="mb-2 text-lg text-secondary">
+                    <span class="font-semibold">Click to upload</span> or drag
+                    and drop
+                  </p>
+                  <p class="text-xs text-blue-400">Any file type supported</p>
+                </div>
+                <div
+                  id="file-preview"
+                  class="hidden w-full h-full flex flex-col items-center justify-center p-4"
+                >
+                  <div
+                    id="preview-container"
+                    class="w-full h-40 mb-4 flex items-center justify-center"
+                  >
+                    <!-- Preview will be inserted here -->
+                  </div>
+                  <p
+                    id="file-name"
+                    class="text-secondary text-base truncate max-w-full"
+                  ></p>
+                </div>
+                <input
+                  id="dropzone-file"
+                  type="file"
+                  class="hidden"
+                  name="file"
+                  required
+                  onchange="handleFileSelect(event)"
+                />
+              </label>
+            </div>
+
+            <button
+              type="submit"
+              id="upload-button"
+              class="mt-8 btn-primary py-3 px-10 rounded-xl text-lg font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-[#1a1f3c] transition-all duration-300 hidden flex items-center"
+            >
+              <i class="ri-upload-2-line mr-2"></i>
+              Upload&nbsp;<span id="upload-filename"></span>
+            </button>
+          </form>
+        </div>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-navbar border-t border-blue py-6">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center text-secondary">
+          <p>© 2024 CloudDrive. All rights reserved.</p>
+        </div>
+      </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
+    <script>
+      function showPopup() {
+        document.querySelector(".popup").style.display = "flex";
+      }
+
+      function hidePopup() {
+        document.querySelector(".popup").style.display = "none";
+        resetFileSelection();
+      }
+
+      function handleFileSelect(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const uploadPrompt = document.getElementById("upload-prompt");
+        const filePreview = document.getElementById("file-preview");
+        const previewContainer = document.getElementById("preview-container");
+        const fileName = document.getElementById("file-name");
+        const uploadButton = document.getElementById("upload-button");
+        const uploadFilename = document.getElementById("upload-filename");
+
+        fileName.textContent = file.name;
+        uploadFilename.textContent =file.name;
+
+        previewContainer.innerHTML = "";
+        if (file.type.startsWith("image/")) {
+          const img = document.createElement("img");
+          img.src = URL.createObjectURL(file);
+          img.className = "max-h-full max-w-full object-contain rounded";
+          previewContainer.appendChild(img);
+        } else if (file.type.startsWith("video/")) {
+          const video = document.createElement("video");
+          video.src = URL.createObjectURL(file);
+          video.className = "max-h-full max-w-full rounded";
+          video.controls = true;
+          previewContainer.appendChild(video);
+        } else {
+          const icon = document.createElement("i");
+          icon.className = "ri-file-text-line text-5xl text-blue-400";
+          previewContainer.appendChild(icon);
+        }
+
+        uploadPrompt.classList.add("hidden");
+        filePreview.classList.remove("hidden");
+        uploadButton.classList.remove("hidden");
+      }
+
+      function resetFileSelection() {
+        const fileInput = document.getElementById("dropzone-file");
+        const uploadPrompt = document.getElementById("upload-prompt");
+        const filePreview = document.getElementById("file-preview");
+        const uploadButton = document.getElementById("upload-button");
+
+        fileInput.value = "";
+        uploadPrompt.classList.remove("hidden");
+        filePreview.classList.add("hidden");
+        uploadButton.classList.add("hidden");
+      }
+    </script>
+  </body>
+</html>
